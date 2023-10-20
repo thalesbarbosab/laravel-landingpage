@@ -14,5 +14,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('day.index');
+});
+Route::get('/portifolio-details', function () {
+    return view('day.portifolio-detail');
 });
