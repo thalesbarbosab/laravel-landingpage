@@ -1,0 +1,62 @@
+Passo-a-passo para instalação do template detalhadamente
+
+Clicar no link promocional: https://www.umbler.com/br/seja-bem-vindo?u=7kl65gnk
+
+No site da umbler Informar um email e clicar em começar agora grátis
+
+Na proxima pagina continuar o formulario e criar conta
+
+Depois deve perguntar um nome de dominio para registro (caso voce ja tenha esse nome registrado, não tem problema depois é possivel migrar)
+
+No painel à esquerda selecione Criar Site
+Selecione instalar PHP
+
+Vamos iniciar nosso ambiente nas configurações bem mínimas:
+Selecione "Um site elastico" (caso queira um servidor inteiro, selecione "vários sites num dedicado"), recurso "PP" e sem backup e depois clique em concluir
+
+Aguardar um pouco o ambiente ser criado, e depois clicar em ir para o site
+
+Edite as configurações do site, onde esta php em roxo, selecione a versão do PHP para 8.2 (defina o seu de acordo com a versão requerida por seus pacotes, vide arquivo composer.json)
+
+Clique em Configurações/SSH que irá ser direcionado para a aba configurações SSH, clique em Habilitar e aguarde a plataforma finalizar o carregamento.
+
+Agora precisamos criar uma chave ssh nossa pessoal que faça a conexão de nosso computador com a umbler. Se voce usa windows, instale o git scm na sua maquina, depois abra o terminal (cmd) e rode o comando "ssh-keygen", a primeira pergunta é onde criar a chave, voce pode apertar "enter" para pular, no meu caso, escrever pois tenho outras chaves. Agora defina uma senha que sera sempre solicitada ao utilizar essa chave e depois aperte "enter" e repita a senha novamente e aperte "enter" para finalizar.
+
+Vamos precisar do codigo rsa criado para autorizarmos na umbler, então no terminal aberto ainda, digite "cd ./ssh", depois digite "notepad id_rsa.pub" (caso tenha informado um nome diferente para a chave informe ela no lugar de "id_rsa" e matenha todo o resto), agora deve abrir o bloco de notas com o arquivo rsa, entao copie o codigo e feche o arquivo e terminal.
+
+Clique em Configurações/SSH que irá ser direcionado para a aba configurações SSH, clique em Habilitar e aguarde a plataforma finalizar o carregamento, depois clique no botão "Gerenciar chaves SSH", depois clique no botão adicionar e irá abrir a na tela de "Autorizar nova chave", informe o titulo do seu desejo (eu sempre gosto de definir qual o nome da estação e usario usando) e informe a chave colando o conteúdo da memória e depois clique em salvar.
+
+Pronto nosso acesso ssh está concluído
+
+Vamos configurar agora o acesso ao git hub para publicarmos nosso projeto, entao clique em "Voltar para home" selecione seu dominio/site, no menu "Arquivos" selecione "Git via SSH"  (Caso não tenha git hub, clique aqui em cima no link do site do git hub, crie sua conta e suba seu projeto lá).
+
+Na tela "Git via SSH" copie a chave publica no bloco 1, depois vamos abrir nosso repositorio no git hub e informar no menu "Setting/Deploy Keys/Add deploy key" a nova chave da umbler com acesso de clonagem do projeto na hospedagem. Informe o "Title" com o nome da hospedagem (pode ser o que voce quiser) e "Key" a chave copiada da memoria, recomendo deixar a opção "Allow write Access" desmarcada pois a hospedagem deve ter acesso apenas para baixar os arquivos. Se pedir senha ou codigo de autorização, preencha e conclua o processo.
+
+Volte para a tela "Git via SSH" e no passo 3 clique em "Autorizar chave" e pronto.
+
+Agora copie o codigo na tela de "Configuração de conexão SSH" e  vamos acessar o terminal (cmd) em nossa estação. Cole o comando no seu terminal (caso queira usar a chave especifica, informe o parametro "-i [caminho local da sua chhave e nome]") e clique em enter. Caso apareça esta mensagem "Are you sure you want to continue connecting (yes/no/[fingerprint])?" escreva "yes" e  aperte enter.
+Agora digite a senha criada na sua chave ssh local e aperte enter. Pronto estamos conectados via ssh no servidor da umbler em nossa hospedagem.
+
+Agora vamos baixar o projeto (clone) do github para a pasta da hospedagem, no terminal aberto ainda escreva o comando "git init" depois "enter", escreva o comando "git remote add origin git@github.com:[caminho do seu repositorio, geralmente "[nome usuario]/[nome respositorio]"].git ." (é possivel copiar completo no github na pagina de seu repositorio aberto, na aba "Code", no botão verde "Code", opção SSH)" depois "enter", exemplo: "git remote add origin git@github.com:thalesbarbosab/laravel-landingpage.git", depois escreva o comando "git fetch" depois "enter", e por ultimo escreva o comando "git checkout main" (caso sua branch principal não seja "main", escreva o nome correto) depois "enter". Pronto clonamos nosso projeto do git na pasta da hospedagem.
+
+Agora precisamos configurar as variáveis de ambiente de nossa aplicação, com o terminal ainda aberto escreva "cp .env.example .env". Este comando irá copiar o arquivo ".env.example" do laravel para um novo ".env" que precisamos para rodar a aplicação.
+
+(Opcional) Agora temos de editar nossas variaveis de ambiente no .env criado. Voltamos no site da umbler e acessamos o menu "Arquivos/Gerenciador", navegamos ate a pasta "/", clicando nela e abrimos nosso arquivo ".env" (é possivel fazer pelo terminal aberto, mas vou facilitar para os mais leigos). Caso desejo informar banco de dados, variaveis de pacotes especificos esta é a hora, defina todos e clique no botão "Salvar".
+
+Agora temos de rodar os comandos para iniciar nossa aplicação. O primeiro é para instalar os pacotes composer na hospedagem, escrevemos entao "composer install".
+
+Agora temos de rodar o comando laravel para gerar a chave da aplicação. Escreva então "php artisan key:generate".
+
+Pronto, ja estamos prontos para fazer um novo teste de funcionamento, na pagina da umbler embaixo do nome de sua hospedagem (centralizado na tela) clique no link de teste, vai  abrir uma nova guia com o site e te pedir um nome de usuario e senha, informe Usuario: "umbler" e Senha: "testehospedagem".
+
+Para sequenciar seus deploys, deixei os commits do github pronto para tal finalidade na branch principal (padrão main), acesse o ssh da hospedagem e rode o comando "git pull" e depois enter. E pronto sempre terá as novas versões do projeto disponiveis no site. Para rodar os comandos de versionar de base de dados "php artisan migrate" entre outros o terminal ja esta disponivel para essa finalidade.
+
+
+
+Artigos de ajuda da umbler que podem te ajudar a resolver alguma dificuldade:
+
+Gerando a chave pública do SSH
+https://help.umbler.com/hc/pt-br/articles/206576653
+
+Configurando e acessando o SSH
+https://help.umbler.com/hc/pt-br/articles/205613805
